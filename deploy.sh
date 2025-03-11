@@ -40,7 +40,7 @@ case "$OS" in
 esac
 
 if command_exists uv; then
-     uv run yadt --version
+     uv run babeldoc --version
      pre-commit install
 else
   exit 1
