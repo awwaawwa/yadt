@@ -15,9 +15,9 @@ from tenacity import wait_exponential
 
 import babeldoc
 from babeldoc.document_il.utils.mupdf_helper import get_no_rotation_img
-from babeldoc.docvision.doclayout import DocLayoutModel
-from babeldoc.docvision.doclayout import YoloBox
-from babeldoc.docvision.doclayout import YoloResult
+from babeldoc.docvision.base_doclayout import DocLayoutModel
+from babeldoc.docvision.base_doclayout import YoloBox
+from babeldoc.docvision.base_doclayout import YoloResult
 
 logger = logging.getLogger(__name__)
 

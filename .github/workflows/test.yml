@@ -33,6 +33,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
+          activate-environment: true
       - name: Warm up cache
         run: |
           uv run babeldoc --warmup

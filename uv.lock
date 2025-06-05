@@ -48,11 +48,13 @@ wheels = [
 
 [[package]]
 name = "babeldoc"
-version = "0.3.56"
+version = "0.3.60"
 source = { editable = "." }
 dependencies = [
     { name = "bitstring" },
+    { name = "charset-normalizer" },
     { name = "configargparse" },
+    { name = "cryptography" },
     { name = "freetype-py" },
     { name = "httpx", extra = ["socks"] },
     { name = "huggingface-hub" },
@@ -64,7 +66,6 @@ dependencies = [
     { name = "openai" },
     { name = "opencv-python-headless" },
     { name = "orjson" },
-    { name = "pdfminer-six" },
     { name = "peewee" },
     { name = "psutil" },
     { name = "pydantic" },
@@ -110,7 +111,9 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "bitstring", specifier = ">=4.3.0" },
+    { name = "charset-normalizer", specifier = ">=2.0.0" },
     { name = "configargparse", specifier = ">=1.7" },
+    { name = "cryptography", specifier = ">=36.0.0" },
     { name = "freetype-py", specifier = ">=2.5.1" },
     { name = "httpx", extras = ["socks"], specifier = ">=0.27.0" },
     { name = "huggingface-hub", specifier = ">=0.27.0" },
@@ -125,7 +128,6 @@ requires-dist = [
     { name = "openai", specifier = ">=1.59.3" },
     { name = "opencv-python-headless", specifier = ">=4.10.0.84" },
     { name = "orjson", specifier = ">=3.10.14" },
-    { name = "pdfminer-six", specifier = "==20250416" },
     { name = "peewee", specifier = ">=3.17.8" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
@@ -1859,19 +1861,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ca/bc/f35b8446f4531a7cb215605d100cd88b7ac6f44ab3fc94870c120ab3adbf/pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712", size = 51043, upload-time = "2023-12-10T22:30:45Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08", size = 31191, upload-time = "2023-12-10T22:30:43.14Z" },
-]
-
-[[package]]
-name = "pdfminer-six"
-version = "20250416"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "charset-normalizer" },
-    { name = "cryptography" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a8/27/1a99ce4cfce829bb91040f82a53f33b33fec4e070d2b9c1b45f6796cd8dc/pdfminer_six-20250416.tar.gz", hash = "sha256:30956a85f9d0add806a4e460ed0d67c2b6a48b53323c7ac87de23174596d3acd", size = 7384630, upload-time = "2025-04-16T09:43:41.944Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/77/32/89749ba23e5020e89fb584c1b39d7da6d7c56a9048307de8a88eec79e2d3/pdfminer_six-20250416-py3-none-any.whl", hash = "sha256:dd2a9ad7bc7dd6b62d009aaa9c101ac9d069a47937724569c375a6a9078da303", size = 5619271, upload-time = "2025-04-16T09:43:40.211Z" },
 ]
 
 [[package]]

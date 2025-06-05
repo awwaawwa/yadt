@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 from babeldoc.assets.assets import get_table_detection_rapidocr_model_path
 from babeldoc.document_il.utils.mupdf_helper import get_no_rotation_img
-from babeldoc.docvision.doclayout import YoloBox
-from babeldoc.docvision.doclayout import YoloResult
+from babeldoc.docvision.base_doclayout import YoloBox
+from babeldoc.docvision.base_doclayout import YoloResult
 from rapidocr_onnxruntime import RapidOCR
 
 try:
