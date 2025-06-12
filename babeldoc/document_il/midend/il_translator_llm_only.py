@@ -284,7 +284,7 @@ class ILTranslatorLLMOnly:
                 llm_prompt_parts.append(self.translation_config.custom_system_prompt)
             else:
                 llm_prompt_parts.append(
-                    f"You are a professional and reliable machine translation engine responsible for translating the input text into {self.translation_config.lang_out}."
+                    f"You are a professional and reliable machine translation engine responsible for translating the input text into {self.translation_config.lang_out}.\n"
                     "When translating, strictly follow the instructions below to ensure translation quality and preserve all formatting, tags, and placeholders:\n"
                 )
 
@@ -378,7 +378,7 @@ class ILTranslatorLLMOnly:
                 '1. You will receive a JSON object with entries containing "id" and "input" fields.'
             )
             llm_prompt_parts.append(
-                '2. Your task is to translate the value of "input" into zh-CN, while applying the rules above.'
+                f'2. Your task is to translate the value of "input" into {self.translation_config.lang_out}, while applying the rules above.'
             )
             llm_prompt_parts.append(
                 '3. Return a new JSON object with the same "id" and the translated "output" field.'

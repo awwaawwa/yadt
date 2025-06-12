@@ -1,6 +1,6 @@
 [project]
 name = "BabelDOC"
-version = "0.3.58"
+version = "0.3.70"
 description = "Yet Another Document Translator"
 license = "AGPL-3.0"
 readme = "README.md"
@@ -26,7 +26,9 @@ dependencies = [
     "onnxruntime>=1.16.1",
     "openai>=1.59.3",
     "orjson>=3.10.14",
-    "pdfminer-six==20250416",
+    "charset-normalizer >= 2.0.0",
+    "cryptography >= 36.0.0",
+#    "pdfminer-six==20250416",
     "peewee>=3.17.8",
     "psutil>=7.0.0",
     "pymupdf>=1.25.1",
@@ -131,6 +133,7 @@ max-complexity = 10 # 函数圈复杂度阈值
 # 忽略 S311 警告，因为这是有意的
 "babeldoc/document_il/midend/paragraph_finder.py" = ["S311"]
 "docs/*" = ["A001"]
+"babeldoc/pdfminer/*" =["A","F", "I", "N", "S", "B", "C", "COM", "ARG", "PTH", "UP"]
 [dependency-groups]
 dev = [
     "bumpver>=2024.1130",
@@ -151,7 +154,7 @@ pythonpath = [".", "src"]
 testpaths = ["tests"]
 
 [bumpver]
-current_version = "0.3.58"
+current_version = "0.3.70"
 version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 
 [bumpver.file_patterns]

@@ -16,15 +16,12 @@ import babeldoc.assets.assets
 import babeldoc.high_level
 from babeldoc.document_il.translator.translator import OpenAITranslator
 from babeldoc.document_il.translator.translator import set_translate_rate_limiter
-from babeldoc.docvision.doclayout import DocLayoutModel
-from babeldoc.docvision.rpc_doclayout import RpcDocLayoutModel
-from babeldoc.docvision.table_detection.rapidocr import RapidOCRModel
 from babeldoc.glossary import Glossary
 from babeldoc.translation_config import TranslationConfig
 from babeldoc.translation_config import WatermarkOutputMode
 
 logger = logging.getLogger(__name__)
-__version__ = "0.3.58"
+__version__ = "0.3.70"
 
 
 def create_parser():
@@ -251,6 +248,25 @@ def create_parser():
         default=True,
         help="Disable automatic term extraction. (Config file: set auto_extract_glossary = false)",
     )
+    translation_group.add_argument(
+        "--auto-enable-ocr-workaround",
+        action="store_true",
+        default=False,
+        help="Enable automatic OCR workaround. If a document is detected as heavily scanned, this will attempt to enable OCR processing and skip further scan detection. Note: This option interacts with `--ocr-workaround` and `--skip-scanned-detection`. See documentation for details. (default: False)",
+    )
+    translation_group.add_argument(
+        "--primary-font-family",
+        type=str,
+        choices=["serif", "sans-serif", "script"],
+        default=None,
+        help="Override primary font family for translated text. Choices: 'serif' for serif fonts, 'sans-serif' for sans-serif fonts, 'script' for script/italic fonts. If not specified, uses automatic font selection based on original text properties.",
+    )
+    translation_group.add_argument(
+        "--only-include-translated-page",
+        action="store_true",
+        default=False,
+        help="Only include translated pages in the output PDF. Effective only when --pages is used.",
+    )
     # service option argument group
     service_group = translation_group.add_mutually_exclusive_group()
     service_group.add_argument(
@@ -329,14 +345,19 @@ async def main():
 
     # 设置翻译速率限制
     set_translate_rate_limiter(args.qps)
-
     # 初始化文档布局模型
     if args.rpc_doclayout:
+        from babeldoc.docvision.rpc_doclayout import RpcDocLayoutModel
+
         doc_layout_model = RpcDocLayoutModel(host=args.rpc_doclayout)
     else:
+        from babeldoc.docvision.doclayout import DocLayoutModel
+
         doc_layout_model = DocLayoutModel.load_onnx()
 
     if args.translate_table_text:
+        from babeldoc.docvision.table_detection.rapidocr import RapidOCRModel
+
         table_model = RapidOCRModel()
     else:
         table_model = None
@@ -466,6 +487,9 @@ async def main():
             glossaries=loaded_glossaries,
             pool_max_workers=args.pool_max_workers,
             auto_extract_glossary=args.auto_extract_glossary,
+            auto_enable_ocr_workaround=args.auto_enable_ocr_workaround,
+            primary_font_family=args.primary_font_family,
+            only_include_translated_page=args.only_include_translated_page,
         )
 
         # Create progress handler
@@ -600,6 +624,7 @@ def cli():
             or v.name.startswith("httpx")
             or "http11" in v.name
             or "openai" in v.name
+            or "pdfminer" in v.name
         ):
             v.disabled = True
             v.propagate = False

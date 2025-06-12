@@ -8,7 +8,6 @@ from pathlib import Path
 
 from babeldoc.const import CACHE_FOLDER
 from babeldoc.document_il.translator.translator import BaseTranslator
-from babeldoc.docvision.doclayout import DocLayoutModel
 from babeldoc.glossary import Glossary
 from babeldoc.glossary import GlossaryEntry
 from babeldoc.progress_monitor import ProgressMonitor
@@ -32,6 +31,7 @@ class SharedContextCrossSplitPart:
         self.user_glossaries: list[Glossary] = []
         self.auto_extracted_glossary: Glossary | None = None
         self.raw_extracted_terms: list[tuple[str, str]] = []
+        self.auto_enabled_ocr_workaround = False
 
     def initialize_glossaries(self, initial_glossaries: list[Glossary] | None):
         with self._lock:
@@ -115,7 +115,7 @@ class TranslationConfig:
         input_file: str | Path,
         lang_in: str,
         lang_out: str,
-        doc_layout_model: DocLayoutModel,
+        doc_layout_model,  # DocLayoutModel
         # for backward compatibility
         font: str | Path | None = None,
         pages: str | None = None,
@@ -151,6 +151,9 @@ class TranslationConfig:
         glossaries: list[Glossary] | None = None,
         pool_max_workers: int | None = None,
         auto_extract_glossary: bool = True,
+        auto_enable_ocr_workaround: bool = False,
+        primary_font_family: str | None = None,
+        only_include_translated_page: bool | None = False,
     ):
         self.translator = translator
         initial_user_glossaries = list(glossaries) if glossaries else []
@@ -230,6 +233,8 @@ class TranslationConfig:
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
         if not doc_layout_model:
+            from babeldoc.docvision.doclayout import DocLayoutModel
+
             doc_layout_model = DocLayoutModel.load_available()
         self.doc_layout_model = doc_layout_model
 
@@ -250,6 +255,24 @@ class TranslationConfig:
         self.custom_system_prompt = custom_system_prompt
         self.add_formula_placehold_hint = add_formula_placehold_hint
         self.auto_extract_glossary = auto_extract_glossary
+        self.auto_enable_ocr_workaround = auto_enable_ocr_workaround
+
+        if auto_enable_ocr_workaround:
+            self.ocr_workaround = False
+            self.skip_scanned_detection = False
+
+        assert primary_font_family in [
+            None,
+            "serif",
+            "sans-serif",
+            "script",
+        ]
+        self.primary_font_family = primary_font_family
+
+        if only_include_translated_page is None:
+            only_include_translated_page = False
+
+        self.only_include_translated_page = only_include_translated_page
 
     def parse_pages(self, pages_str: str | None) -> list[tuple[int, int]] | None:
         """解析页码字符串，返回页码范围列表
