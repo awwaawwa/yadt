@@ -34,7 +34,7 @@
 PDF scientific paper translation and bilingual comparison library.
 
 - **Online Service**: Beta version launched [Immersive Translate - BabelDOC](https://app.immersivetranslate.com/babel-doc/) 1000 free pages per month.
-- **Self-deployment**: [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate) 1.9.3+ Experimental support for BabelDOC, available for self-deployment + WebUI with more translation services.
+- **Self-deployment**: [PDFMathTranslate 2.0](https://github.com/PDFMathTranslate/PDFMathTranslate-next) support for BabelDOC, available for self-deployment + WebUI with more translation services.
 - Provides a simple [command line interface](#getting-started).
 - Provides a [Python API](#python-api).
 - Mainly designed to be embedded into other programs, but can also be used directly for simple translation tasks.
@@ -122,7 +122,7 @@ uv run babeldoc --files example.pdf --files example2.pdf --openai --openai-model
 >
 > End users should directly use **Online Service**: Beta version launched [Immersive Translate - BabelDOC](https://app.immersivetranslate.com/babel-doc/) 1000 free pages per month.
 >
-> End users who need self-deployment should use [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate)
+> End users who need self-deployment should use [PDFMathTranslate 2.0](https://github.com/PDFMathTranslate/PDFMathTranslate-next)
 > 
 > If you find that an option is not listed below, it means that this option is a debugging option for maintainers. Please do not use these options.
 
@@ -154,8 +154,16 @@ uv run babeldoc --files example.pdf --files example2.pdf --openai --openai-model
 - `--max-pages-per-part`: Maximum number of pages per part for split translation. If not set, no splitting will be performed.
 - `--no-watermark`: [DEPRECATED] Use --watermark-output-mode=no_watermark instead.
 - `--translate-table-text`: Translate table text (experimental, default: False)
+- `--formular-font-pattern`: Font pattern to identify formula text (default: None)
+- `--formular-char-pattern`: Character pattern to identify formula text (default: None)
+- `--show-char-box`: Show character bounding boxes (debug only, default: False)
 - `--skip-scanned-detection`: Skip scanned document detection (default: False). When using split translation, only the first part performs detection if not skipped.
-- `--ocr-workaround`: Use OCR workaround (default: False). When enabled, the tool will use OCR to detect text and fill background for scanned PDF.
+- `--ocr-workaround`: Use OCR workaround (default: False). Only suitable for documents with black text on white background. When enabled, white rectangular blocks will be added below the translation to cover the original text content, and all text will be forced to black color.
+- `--auto-enable-ocr-workaround`: Enable automatic OCR workaround (default: False). If a document is detected as heavily scanned, this will attempt to enable OCR processing and skip further scan detection. See "Important Interaction Note" below for crucial details on how this interacts with `--ocr-workaround` and `--skip-scanned-detection`.
+- `--primary-font-family`: Override primary font family for translated text. Choices: 'serif' for serif fonts, 'sans-serif' for sans-serif fonts, 'script' for script/italic fonts. If not specified, uses automatic font selection based on original text properties.
+- `--only-include-translated-page`: Only include translated pages in the output PDF. This option is only effective when `--pages` is used. (default: False)
+
+- `--rpc-doclayout`: RPC service host address for document layout analysis (default: None)
 - `--working-dir`: Working directory for translation. If not set, use temp directory.
 - `--no-auto-extract-glossary`: Disable automatic term extraction. If this flag is present, the step is skipped. Defaults to enabled.
 
@@ -183,7 +191,7 @@ uv run babeldoc --files example.pdf --files example2.pdf --openai --openai-model
 
 > [!TIP]
 >
-> 1. Currently, only OpenAI-compatible LLM is supported. For more translator support, please use [PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate).
+> 1. Currently, only OpenAI-compatible LLM is supported. For more translator support, please use [PDFMathTranslate 2.0](https://github.com/PDFMathTranslate/PDFMathTranslate-next).
 > 2. It is recommended to use models with strong compatibility with OpenAI, such as: `glm-4-flash`, `deepseek-chat`, etc.
 > 3. Currently, it has not been optimized for traditional translation engines like Bing/Google, it is recommended to use LLMs.
 > 4. You can use [litellm](https://github.com/BerriAI/litellm) to access multiple models.
@@ -215,8 +223,12 @@ uv run babeldoc --files example.pdf --files example2.pdf --openai --openai-model
 ### Output Control
 
 - `--output`, `-o`: Output directory for translated files. If not set, use current working directory.
-- `--debug`, `-d`: Enable debug logging level and export detailed intermediate results in `~/.cache/yadt/working`.
+- `--debug`: Enable debug logging level and export detailed intermediate results in `~/.cache/yadt/working`.
 - `--report-interval`: Progress report interval in seconds (default: 0.1).
+
+### General Options
+
+- `--warmup`: Only download and verify required assets then exit (default: False)
 
 ### Offline Assets Management
 
@@ -258,9 +270,17 @@ disable-rich-text-translate = false
 use-alternating-pages-dual = false
 watermark-output-mode = "watermarked"  # Choices: "watermarked", "no_watermark", "both"
 max-pages-per-part = 50  # Automatically split the document for translation and merge it back.
+only_include_translated_page = false # Only include translated pages in the output PDF. Effective only when `pages` is used.
 # no-watermark = false  # DEPRECATED: Use watermark-output-mode instead
 skip-scanned-detection = false  # Skip scanned document detection for faster processing
 auto_extract_glossary = true # Set to false to disable automatic term extraction
+formular_font_pattern = "" # Font pattern for formula text
+formular_char_pattern = "" # Character pattern for formula text
+show_char_box = false # Show character bounding boxes (debug)
+ocr_workaround = false # Use OCR workaround for scanned PDFs
+rpc_doclayout = "" # RPC service host for document layout analysis
+working_dir = "" # Working directory for translation
+auto_enable_ocr_workaround = false # Enable automatic OCR workaround for scanned PDFs. See docs for interaction with ocr_workaround and skip_scanned_detection.
 
 # Translation service
 openai = true
@@ -294,7 +314,7 @@ report-interval = 0.5
 >
 > 3. We do not provide any technical support for the BabelDOC API.
 >
-> 4. When performing secondary development, please refer to [pdf2zh 2.0 high level](https://github.com/awwaawwa/PDFMathTranslate/blob/v2-rc/pdf2zh/high_level.py) and ensure that BabelDOC runs in a subprocess.
+> 4. When performing secondary development, please refer to [pdf2zh 2.0 high level](https://github.com/PDFMathTranslate/PDFMathTranslate-next/blob/main/pdf2zh_next/high_level.py) and ensure that BabelDOC runs in a subprocess.
 
 You can refer to the example in [main.py](https://github.com/funstory-ai/yadt/blob/main/babeldoc/main.py) to use BabelDOC's Python API.
 
@@ -411,3 +431,14 @@ Everyone interacting in YADT and its sub-projects' codebases, issue trackers, ch
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=funstory-ai/babeldoc&type=Date"/>
  </picture>
 </a>
+
+> [!WARNING]
+> **Important Interaction Note for `--auto-enable-ocr-workaround`:**
+>
+> When `--auto-enable-ocr-workaround` is set to `true` (either via command line or config file):
+>
+> 1.  During the initial setup, the values for `ocr_workaround` and `skip_scanned_detection` will be forced to `false` by `TranslationConfig`, regardless of whether you also set `--ocr-workaround` or `--skip-scanned-detection` flags.
+> 2.  Then, during the scanned document detection phase (`DetectScannedFile` stage):
+>     *   If the document is identified as heavily scanned (e.g., >80% scanned pages) AND `auto_enable_ocr_workaround` is `true` (i.e., `translation_config.auto_enable_ocr_workaround` is true), the system will then attempt to set both `ocr_workaround` to `true` and `skip_scanned_detection` to `true`.
+>
+> This means that `--auto-enable-ocr-workaround` effectively gives the system control to enable OCR processing for scanned documents, potentially overriding manual settings for `--ocr-workaround` and `--skip_scanned_detection` based on its detection results. If the document is *not* detected as heavily scanned, then the initial `false` values for `ocr_workaround` and `skip_scanned_detection` (forced by `--auto-enable-ocr-workaround` at the `TranslationConfig` initialization stage) will remain in effect unless changed by other logic.

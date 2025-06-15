@@ -99,6 +99,7 @@ def parse_truetype_data(data):
 TOUNICODE_HEAD = """\
 /CIDInit /ProcSet findresource begin
 12 dict begin
+begincmap
 /CIDSystemInfo <</Registry(Adobe)/Ordering(UCS)/Supplement 0>> def
 /CMapName /Adobe-Identity-UCS def
 /CMapType 2 def
@@ -124,7 +125,10 @@ def make_tounicode(cmap, used):
             if code < 0x10000:
                 line.append(f"<{glyph:04x}><{code:04x}>")
             else:
-                line.append(f"<{glyph:04x}><{code:08x}>")
+                code -= 0x10000
+                high = 0xD800 + (code >> 10)
+                low = 0xDC00 + (code & 0b1111111111)
+                line.append(f"<{glyph:04x}><{high:04x}{low:04x}>")
         line.append("endbfchar")
     line.append(TOUNICODE_TAIL)
     return "\n".join(line)
@@ -962,6 +966,22 @@ class PDFCreater:
                 self.restore_media_box(pdf, self.mediabox_data)
             except Exception:
                 logger.exception("restore media box failed")
+
+            if translation_config.only_include_translated_page:
+                total_page = set(range(0, len(pdf)))
+
+                pages_to_translate = {
+                    page.page_number
+                    for page in self.docs.page
+                    if self.translation_config.should_translate_page(
+                        page.page_number + 1
+                    )
+                }
+
+                should_removed_page = list(total_page - pages_to_translate)
+
+                pdf.delete_pages(should_removed_page)
+
             with self.translation_config.progress_monitor.stage_start(
                 SAVE_PDF_STAGE_NAME,
                 2,
@@ -994,6 +1014,11 @@ class PDFCreater:
                     )
                     translation_config.raise_if_cancelled()
                     original_pdf = pymupdf.open(self.original_pdf_path)
+                    if (
+                        self.translation_config.only_include_translated_page
+                        and should_removed_page
+                    ):
+                        original_pdf.delete_pages(should_removed_page)
                     translated_pdf = pdf
 
                     # Choose between alternating pages and side-by-side format
@@ -1047,6 +1072,10 @@ class PDFCreater:
                             pretty=True,
                         )
                 pbar.advance()
+            if self.translation_config.no_mono:
+                mono_out_path = None
+            if self.translation_config.no_dual:
+                dual_out_path = None
             return TranslateResult(mono_out_path, dual_out_path)
         except Exception:
             logger.exception(

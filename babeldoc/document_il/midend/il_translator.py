@@ -867,7 +867,7 @@ class ILTranslator:
             "3. If there is no need to translate (such as proper nouns, codes, etc.), then return the original text."
         )
         llm_input.append(
-            "4. Only output the translation result without explanations and annotations."
+            f"4. Only output the translation result in {self.translation_config.lang_out} without explanations and annotations."
         )
         llm_input.append(f"5. Translate text into {self.translation_config.lang_out}.")
         prompt_template = f"""

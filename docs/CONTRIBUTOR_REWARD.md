@@ -16,7 +16,10 @@
 
 ### 二、申请流程
 #### **申请条件**
-   - PR 需被成功合并至[funstory-ai/BabelDOC](https://github.com/funstory-ai/BabelDOC/pulls) 仓库或 [Byaidu/PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate/pulls)的主分支。
+   - PR 需被成功合并至以下几个仓库：
+     1. [funstory-ai/BabelDOC](https://github.com/funstory-ai/BabelDOC/pulls) 仓库
+     2. [Byaidu/PDFMathTranslate](https://github.com/Byaidu/PDFMathTranslate/pulls) 的主分支 
+     3. [PDFMathTranslate/PDFMathTranslate-next](https://github.com/PDFMathTranslate/PDFMathTranslate-next/pulls) 的主分支。
    - 若目标为 [funstory-ai/BabelDOC](https://github.com/funstory-ai/BabelDOC/pulls) 的 PR 未被合并，但被维护者认定为有价值的概念验证，同样符合条件。
    - 审核 PR、撰写 wiki 等贡献也必须是以上两个仓库。
    - 同一贡献者每月仅可申请一次（无论提交 PR 数量）
@@ -32,6 +35,10 @@
      - 合并 PR 的完整链接
    - 附件要求：
      - PR 页面完整截图（需包含合并状态、仓库名称及点击头像后弹出来的侧边栏，如下图所示）
+
+> [!IMPORTANT]
+>
+> 不满足上述格式要求的邮件会被直接忽略！
 
 ![附件示例](https://s.immersivetranslate.com/assets/r2-uploads/images/babeldoc-contributor_reward_example.png)
 
