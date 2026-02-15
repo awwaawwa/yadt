@@ -48,6 +48,9 @@ Please pay special attention to:
 >
 > In addition, we do not accept PRs involving the following changes:
 > 1. PRs that modify prompts.
+> 2. Adding GUI or other features directly targeting end users to this project. (Exceptions granted by maintainers in issues are excluded.)
+> 3. PRs that do not comply with this specification.
+> 4. Other PRs that maintainers deem inappropriate.
 >
 > **This project cannot accept all PRs. We recommend that you discuss with the maintainers via [Issue](https://github.com/funstory-ai/BabelDOC/issues) before submitting a PR.**
 
