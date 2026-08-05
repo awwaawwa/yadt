@@ -323,7 +323,7 @@ report-interval = 0.5
 
 ## Python API
 
-The current recommended way to call BabelDOC in Python is to call the `high_level.do_translate_async_stream` function of [pdf2zh next](https://github.com/PDFMathTranslate/PDFMathTranslate-next).
+The current recommended way to call BabelDOC in Python is to call the `high_level.do_translate_async_stream` function of [pdf2zh next](https://pdf2zh-next.com/).
 
 > [!WARNING]
 > **All APIs of BabelDOC should be considered as internal APIs, and any direct use of BabelDOC is not supported.**
@@ -383,7 +383,7 @@ This project uses a combination of [Semantic Versioning](https://semver.org/) an
 
 > [!NOTE]
 >
-> The API compatibility here mainly refers to the compatibility with [pdf2zh_next](https://github.com/PDFMathTranslate/PDFMathTranslate-next).
+> The API compatibility here mainly refers to the compatibility with [pdf2zh_next](https://pdf2zh-next.com/).
 
 
 - MAJOR: Incremented by 1 when API incompatible changes are made or when proud improvements are implemented.
